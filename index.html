@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur d'Importation - Aijia Trading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #1565c0;
+            margin-bottom: 15px;
+            border-left: 3px solid #2196f3;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .input-prefix {
+            position: relative;
+        }
+        
+        .input-prefix::before {
+            content: "$";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .input-prefix input {
+            padding-left: 35px;
+        }
+        
+        .input-suffix {
+            position: relative;
+        }
+        
+        .input-suffix::after {
+            content: "%";
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .input-suffix input {
+            padding-right: 35px;
+        }
+        
+        .advanced-toggle {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .advanced-toggle button {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        .advanced-section {
+            display: none;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .advanced-section.show {
+            display: block;
+        }
+        
+        .advanced-section h4 {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .results {
+            display: none;
+            margin-top: 25px;
+        }
+        
+        .results.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .results h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+        
+        .cost-item.total {
+            font-weight: 700;
+            font-size: 16px;
+            color: #667eea;
+            margin-top: 10px;
+            padding-top: 12px;
+            border-top: 2px solid #667eea;
+            border-bottom: none;
+        }
+        
+        .cost-item.warning {
+            background: #fff3e0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border: none;
+        }
+        
+        .disclaimer {
+            margin-top: 15px;
+            padding: 12px;
+            background: #fff8e1;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #f57c00;
+            text-align: center;
+        }
+        
+        .pdf-reference {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #2e7d32;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .cta {
+            margin-top: 20px;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+        }
+        
+        .cta h4 {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .cta p {
+            font-size: 12px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+        
+        .cta-btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+        }
+        
+        .data-source {
+            font-size: 10px;
+            color: #999;
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🚗</div>
+            <h1>Calculateur d'Importation</h1>
+            <p>Estimation des frais pour importation Chine-Afrique</p>
+        </div>
+        
+        <div class="info-box">
+            💡 <strong>Mode estimation :</strong> Les taux sont basés sur les tarifs UEMOA. Pour un devis exact, contactez les douanes locales.
+        </div>
+        
+        <form id="calculatorForm">
+            <div class="form-group">
+                <label for="country">Pays de destination</label>
+                <select id="country" required>
+                    <option value="">Choisir un pays</option>
+                    <option value="ci">🇨🇮 Côte d'Ivoire</option>
+                    <option value="tg">🇹🇬 Togo</option>
+                    <option value="sn">🇸🇳 Sénégal</option>
+                    <option value="bj">🇧🇯 Bénin</option>
+                    <option value="gh">🇬🇭 Ghana</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="carPrice">Prix FOB du véhicule (USD)</label>
+                <div class="input-prefix">
+                    <input type="number" id="carPrice" placeholder="Ex: 8000" min="1000" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="shippingCost">Fret maritime (USD) - à saisir manuellement</label>
+                <div class="input-prefix">
+                    <input type="number" id="shippingCost" placeholder="Ex: 1200" min="0" required>
+                </div>
+                <small style="color: #666; font-size: 11px;">Demandez un devis à votre transitaire</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="insurance">Assurance (%)</label>
+                <div class="input-suffix">
+                    <input type="number" id="insurance" value="1.5" min="0" max="10" step="0.1">
+                </div>
+            </div>
+            
+            <div class="advanced-toggle">
+                <button type="button" onclick="toggleAdvanced()">⚙️ Modifier les taux douaniers (optionnel)</button>
+            </div>
+            
+            <div class="advanced-section" id="advancedSection">
+                <h4>Taux douaniers (valeurs par défaut UEMOA)</h4>
+                <div class="form-group">
+                    <label>Droit de douane (%)</label>
+                    <div class="input-suffix">
+                        <input type="number" id="customsDuty" value="25" min="0" max="100">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>TVA (%)</label>
+                    <div class="input-suffix">
+                        <input type="number" id="vat" value="18" min="0" max="100">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Taxes annexes (%)</label>
+                    <div class="input-suffix">
+                        <input type="number" id="otherTaxes" value="3" min="0" max="50">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Frais portuaires (USD)</label>
+                    <div class="input-prefix">
+                        <input type="number" id="portFees" value="400" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Frais d'agence (USD)</label>
+                    <div class="input-prefix">
+                        <input type="number" id="agencyFees" value="350" min="0">
+                    </div>
+                </div>
+                
+                <div class="pdf-reference">
+                    📄 <strong>Référence PDF :</strong> Tarifs basés sur le Code SH 8703 (véhicules) du tarif UEMOA. Dernière mise à jour : estimation 2024.
+                </div>
+            </div>
+            
+            <button type="submit" class="calculate-btn">
+                Calculer le coût total
+            </button>
+        </form>
+        
+        <div id="results" class="results">
+            <h3>📊 Estimation détaillée</h3>
+            <div id="breakdown"></div>
+            
+            <div class="disclaimer">
+                ⚠️ <strong>Important :</strong> Cette estimation est indicative. Les taux réels varient selon l'âge, le type de véhicule et les réglementations locales. Contactez les douanes pour confirmation.
+            </div>
+        </div>
+        
+        <div class="cta">
+            <h4>🎯 Devis exact ? Contactez-moi !</h4>
+            <p>Je vérifie les tarifs douaniers officiels et les disponibilités.</p>
+            <a href="https://instagram.com/aijia.trading" class="cta-btn">DM sur Instagram</a>
+        </div>
+        
+        <div class="data-source">
+            * Basé sur tarif UEMOA - À confirmer avec douanes locales
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Aijia Trading | By Hossam</p>
+            <p>Guangzhou → Afrique de l'Ouest</p>
+        </div>
+    </div>
+    
+    <script>
+        function toggleAdvanced() {
+            const section = document.getElementById('advancedSection');
+            section.classList.toggle('show');
+        }
+        
+        // Données par pays (basées sur estimation UEMOA)
+        const countryPresets = {
+            ci: { name: "Côte d'Ivoire", customsDuty: 25, vat: 18, otherTaxes: 3, portFees: 450, agencyFees: 350 },
+            tg: { name: "Togo", customsDuty: 22, vat: 18, otherTaxes: 2, portFees: 380, agencyFees: 300 },
+            sn: { name: "Sénégal", customsDuty: 27, vat: 18, otherTaxes: 5, portFees: 550, agencyFees: 400 },
+            bj: { name: "Bénin", customsDuty: 23, vat: 18, otherTaxes: 2, portFees: 400, agencyFees: 320 },
+            gh: { name: "Ghana", customsDuty: 20, vat: 15, otherTaxes: 2.5, portFees: 480, agencyFees: 350 }
+        };
+        
+        // Auto-remplir quand pays sélectionné
+        document.getElementById('country').addEventListener('change', function() {
+            const country = this.value;
+            if (country && countryPresets[country]) {
+                const preset = countryPresets[country];
+                document.getElementById('customsDuty').value = preset.customsDuty;
+                document.getElementById('vat').value = preset.vat;
+                document.getElementById('otherTaxes').value = preset.otherTaxes;
+                document.getElementById('portFees').value = preset.portFees;
+                document.getElementById('agencyFees').value = preset.agencyFees;
+            }
+        });
+        
+        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const carPrice = parseFloat(document.getElementById('carPrice').value);
+            const shippingCost = parseFloat(document.getElementById('shippingCost').value);
+            const insuranceRate = parseFloat(document.getElementById('insurance').value) / 100;
+            
+            const customsDutyRate = parseFloat(document.getElementById('customsDuty').value) / 100;
+            const vatRate = parseFloat(document.getElementById('vat').value) / 100;
+            const otherTaxesRate = parseFloat(document.getElementById('otherTaxes').value) / 100;
+            const portFees = parseFloat(document.getElementById('portFees').value);
+            const agencyFees = parseFloat(document.getElementById('agencyFees').value);
+            
+            // Calculs
+            const insurance = (carPrice + shippingCost) * insuranceRate;
+            const cifValue = carPrice + shippingCost + insurance;
+            
+            const customsDuty = cifValue * customsDutyRate;
+            const vat = (cifValue + customsDuty) * vatRate;
+            const otherTaxes = cifValue * otherTaxesRate;
+            
+            const totalCost = carPrice + shippingCost + insurance + customsDuty + vat + otherTaxes + portFees + agencyFees;
+            const totalTaxes = customsDuty + vat + otherTaxes;
+            
+            // Affichage
+            const breakdownHTML = `
+                <div class="cost-item">
+                    <span>💰 Prix du véhicule (Chine)</span>
+                    <span>$${carPrice.toLocaleString()}</span>
+                </div>
+                
+                <div style="color: #666; font-size: 11px; margin-top: 10px; margin-bottom: 5px;">
+                    ⬇ FRET & ASSURANCE
+                </div>
+                <div class="cost-item">
+                    <span>&nbsp;&nbsp;&nbsp;Fret maritime</span>
+                    <span>$${shippingCost.toLocaleString()}</span>
+                </div>
+                <div class="cost-item">
+                    <span>&nbsp;&nbsp;&nbsp;Assurance (${(insuranceRate*100).toFixed(1)}%)</span>
+                    <span>$${insurance.toFixed(0)}</span>
+                </div>
+                
+                <div style="color: #666; font-size: 11px; margin-top: 10px; margin-bottom: 5px;">
+                    🏛️ DOUANES & TAXES
+                </div>
+                <div class="cost-item">
+                    <span>&nbsp;&nbsp;&nbsp;Droits de douane (${(customsDutyRate*100).toFixed(0)}%)</span>
+                    <span>$${customsDuty.toFixed(0)}</span>
+                </div>
+                <div class="cost-item">
+                    <span>&nbsp;&nbsp;&nbsp;TVA (${(vatRate*100).toFixed(0)}%)</span>
+                    <span>$${vat.toFixed(0)}</span>
+                </div>
+                <div class="cost-item">
+                    <span>&nbsp;&nbsp;&nbsp;Taxes annexes</span>
+                    <span>$${otherTaxes.toFixed(0)}</span>
+                </div>
+                
+                <div class="cost-item">
+                    <span>⚓ Frais portuaires</span>
+                    <span>$${portFees}</span>
+                </div>
+                <div class="cost-item">
+                    <span>📋 Frais d'agence</span>
+                    <span>$${agencyFees}</span>
+                </div>
+                
+                <div class="cost-item total">
+                    <span>💵 COÛT TOTAL</span>
+                    <span>$${totalCost.toLocaleString()}</span>
+                </div>
+                
+                <div class="cost-item warning">
+                    <span>📊 Surcoût vs prix affiché</span>
+                    <span>+${((totalCost / carPrice - 1) * 100).toFixed(0)}%</span>
+                </div>
+                
+                <div style="margin-top: 15px; padding: 10px; background: #f5f5f5; border-radius: 8px; font-size: 11px;">
+                    <strong>Détail :</strong><br>
+                    Prix Chine : $${carPrice.toLocaleString()}<br>
+                    + Transport : $${(shippingCost + insurance).toFixed(0)}<br>
+                    + Taxes douanes : $${totalTaxes.toFixed(0)}<br>
+                    + Frais : $${(portFees + agencyFees)}<br>
+                    <strong>= Total : $${totalCost.toLocaleString()}</strong>
+                </div>
+            `;
+            
+            document.getElementById('breakdown').innerHTML = breakdownHTML;
+            document.getElementById('results').classList.add('show');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
